@@ -7,6 +7,7 @@ EN EL ARCHIVO PONGA
 Namespace App/Controllers;
 DECLARE SU CLASE POR EJEMPLO 
 ```PHP
+namespace App\Controllers;
 class ejemplo{
     function ejemplo(){}
 }
