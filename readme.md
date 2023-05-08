@@ -148,9 +148,7 @@ window.onload = function() {
 ```
 PARA PODER USAR NUESTRAS FUNCIONES CREAREMOS RUTAS EN ROUTES/WEB.PHP
 PARA USAR DECLARE DE LA SIGUIENTE MANERA 
-```PHP
 Route::get("/nombre de como quiere llamar la ruta"["nombre del controlador::class,"funcion a llamar"]);
-```
 EJEMPLO
 ```PHP
 Route::get('/register',[ControllerUser::class,"register"]);
