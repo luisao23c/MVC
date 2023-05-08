@@ -19,6 +19,67 @@ class ejemplo extends Controllers{
      function ejemplo(){}
 }
 ```
+PARA USAR NUESTRA BASE DE DATOS EN LAS FUNCIONES DEBEMOS CREAR MODELOS EN APP/MODELS CON  
+namespace App\Models; y declarar proctected table ="nombre de la tabla" y en publicas declaremos los campos de nuestra tabla 
+EJEMPLO
+```PHP
+namespace App\Models;
+class Users extends DB{
+    protected $table = 'users';
+    public $nombre = null;
+    public $apellidos = null;
+    public $edad = null;
+    
+}
+```
+EN NUESTROS MODELOS PODEMOS USAR FUNCIONES LLAMANDO A ESTOS MODELOS POR EJEMPLO 
+NOS SIRVE PARA INSERTAR SOLO NECESITAMOS PASAR LA INSTACIA AL METODO SAVE(INSTANCIA);
+```PHP
+namespace App\Controllers;
+use App\Models\Users;
+use App\Models\Socios;
+
+class ControllerUser extends Controllers{
+  
+public function register($request){
+         $Users = new Users();
+         $Users->nombre = isset( $request->nombre) ? $request->nombre : NULL ;
+         $Users->apellidos = isset( $request->apellidos) ? $request->apellidos : NULL ;
+         $Users->edad = isset( $request->edad) ? $request->edad : NULL ;       
+         $Users->save($Users);
+
+}
+```
+PARA ACTUALIZAR NECESITAMOS COMO DE LA INSTACIA LA COLUMNA, OPERADOR Y VALOR DE NO PASAR OPERADOR SE TOMARA COMO = POR DEFECTO
+```PHP
+ $Users->update($Users,"id",97);    
+```
+CONSULTA TODOS LOS DATOS DE LA TABLA 
+```PHP
+ $Users->all();
+```
+CONSULTA POR ID Y TRAE EL REGISTRO
+```PHP
+ $Users->find(1);
+```
+CONSULTA CON CONDICION WHERE NECESITA COLUMN OPERADOR Y VALOR DE PASAR DOS PARAMETROS OPERADOR ES = SI SON 3 PARAMETROS USTED LO DETERMINA
+```PHP
+ $Users->where("id",1);
+ $Users->where("id",">",1);
+```
+CONSULTA NORMAL
+```PHP
+ $Users->query("select * from table;");
+```
+CONSULTA CON LIMITE Y ORDENAMIENTO COLUMNA,ORDEN ASC O DESC Y CANTIDAD;
+```PHP
+ $Users->limit("nombre","desc",5);
+```
+CONSULTA CON LIMITE Y ORDENAMIENTO COLUMNA,ORDEN ASC O DESC Y CANTIDAD CON CONDICION SON 3 PARAMETROS MAS AL IGUAL OPERADOR POR DEFECTO =  COLUMN,OPERADOR,VALOR;
+```PHP
+ $Users->limit("nombre","desc",1,"id","5");
+ $Users->limit("nombre","desc",5,"id",">","5");
+```
 PARA USAR VISTAS VAYA DIRECTAMENTE A LA CARPETA RESOURCES VIEWS SI NECESITA CREAR CARPETAS HAGALO ADENTRO DE ESTA CARPETA
 PARA USAR NUESTRAS VISTAS DESDE NUESTRO CONTROLADOR CREADO LLAME LA FUNCION VIEW COMO SE MUESTRA
 EJEMPLO
