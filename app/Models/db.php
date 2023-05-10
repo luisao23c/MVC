@@ -10,14 +10,17 @@ class DB {
     public $password =DB_PASS;
     public $connection ="";
     protected $table ="";
+    protected $primarykey ="id";
+
+    public $sql = "";
         function __construct() {
             $this->connection = new PDO("mysql:host=$this->servidor;dbname=$this->dbname",$this->username,$this->password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
           }// Declaración de una propiedad    
         
         function all(){
-            $sql = "SELECT * FROM {$this->table}";
-           $setence =$this->connection->prepare($sql);
+            $this->sql = $this->sql . "SELECT * FROM {$this->table}";
+           $setence =$this->connection->prepare($this->sql);
            $setence->execute();
            $setence->setFetchMode(PDO::FETCH_ASSOC);
 
@@ -27,68 +30,36 @@ class DB {
 
 
          function find($id){
-            $sql = "SELECT * FROM {$this->table} WHERE id = {$id};";
-            $setence =$this->connection->prepare($sql);
-           $setence->execute();
-           $setence->setFetchMode(PDO::FETCH_ASSOC);
-           return json_encode($setence->fetchAll());
+            $this->sql = $this->sql . "SELECT * FROM {$this->table} WHERE {$this->primarykey} = {$id}";
+            return $this;
          } 
+         function get(){
+            $setence =$this->connection->prepare($this->sql);
+            $setence->execute();
+            $setence->setFetchMode(PDO::FETCH_ASSOC);
+            return json_encode($setence->fetchAll());
+         }
+       
+
          function where($column,$operator,$value = null){
             if($value == null){
                $value = $operator;
                $operator = "=";
             }
             if(gettype($value)=="string"){
-                $sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} \"{$value}\"";
+                $this->sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} \"{$value}\"";
 
             }
             else{
-                $sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} {$value}";
+                $this->sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} {$value}";
 
             }
-            $setence =$this->connection->prepare($sql);
-            $setence->execute();
-            $setence->setFetchMode(PDO::FETCH_ASSOC); 
-            return json_encode($setence->fetchAll());
+            return $this;
 
         }
-        function limit($column, $order, $limit = null,$columnwhere = null,$operator = null,$valuewhere = null){
-            $sql = null;
-            if($limit == null &&$columnwhere == null &&$operator == null && $valuewhere == null) 
-            {
-                $sql = "SELECT * FROM {$this->table} GROUP BY {$column} {$order};";
-
-            }
-            else if($valuewhere == null && $columnwhere != null && $operator != null)
-            {
-             $valuewhere = $operator;
-             $operator = "=";
-             if(gettype($valuewhere)=="string"){
-                $sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} \"{$valuewhere}\" GROUP BY {$column} {$order} LIMIT {$limit};";
-            }
-            else{
-             $sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} {$valuewhere} GROUP BY {$column} {$order} LIMIT {$limit};";
-            }
-            }
-            else if($columnwhere == null &&$operator == null && $valuewhere == null){
-                $sql = "SELECT * FROM {$this->table} GROUP BY {$column} {$order} LIMIT {$limit};";
-            }
-            else if($column !=null && $order !=null && $limit != null && $columnwhere != null && $operator != null &&$valuewhere != null){
-                if(gettype($valuewhere)=="string"){
-                    $sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} \"{$valuewhere}\" GROUP BY {$column} {$order} LIMIT {$limit};";
-                }
-                else{
-                 $sql = "SELECT * FROM {$this->table} WHERE {$column} {$operator} {$valuewhere} GROUP BY {$column} {$order} LIMIT {$limit};";
-                }
-
-            }
-
-            $setence =$this->connection->prepare($sql);
-            $setence->execute();
-            $setence->setFetchMode(PDO::FETCH_ASSOC); 
-
-            return json_encode($setence->fetchAll());
-
+        function limit($column, $order, $limit = null){
+        $this->sql = $this->sql. " GROUP BY {$column} {$order} LIMIT {$limit}";
+        return $this;
         }
         function query($sql){
             $setence =$this->connection->prepare($sql);
@@ -158,24 +129,21 @@ class DB {
     }
 
 
-    function delete($column,$operator,$value = null){
-        if($value == null){
-           $value = $operator;
-           $operator = "=";
+    function delete(){
+        $condition ="";
+        $setence =$this->connection->prepare($this->sql);
+            $setence->execute();
+            $setence->setFetchMode(PDO::FETCH_ASSOC); 
+            foreach($setence as $key => $value){
+                       $condition = $value[$this->primarykey];
+                       break;
+            }
+            $this->sql = "";
+            $this->sql = "DELETE FROM {$this->table} WHERE {$this->primarykey} = {$condition}";
+            $setence =$this->connection->prepare($this->sql);
+            $setence->execute();
+            $setence->setFetchMode(PDO::FETCH_ASSOC);
+            return json_encode($setence->fetchAll());
         }
-        if(gettype($value)=="string"){
-            $sql = "DELETE FROM {$this->table} WHERE {$column} {$operator} \"{$value}\"";
-
-        }
-        else{
-            $sql = "DELETE  FROM {$this->table} WHERE {$column} {$operator} {$value}";
-
-        }
-        $setence =$this->connection->prepare($sql);
-        $setence->execute();
-        $setence->setFetchMode(PDO::FETCH_ASSOC); 
-        return json_encode($setence->fetchAll());
-
-    }
 
 }

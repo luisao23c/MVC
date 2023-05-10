@@ -8,7 +8,7 @@ use App\Controllers\ControllerSocios;
 // Route::put('/angel',[ControllerUser::class,"login"]);
 // Route::delete('/angel',[ControllerUser::class,"login"]);
 // Routes sin ser autenticadas
-Route::post('/luis',[ControllerUser::class,"register"]);
+Route::get('/luis',[ControllerUser::class,"register"])->auth();
 Route::dispatch();
 // Routes Autenticadas
 // Route::auth();

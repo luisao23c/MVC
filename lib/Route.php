@@ -6,9 +6,10 @@ class Route{
     public static function get($uri,$callback){
         $uri = trim($uri, '/');
         self::$routes["GET"][$uri] = $callback;
+        return new static();
+
     }
     public static function auth(){
-
 
         // base64 encodes the header json
         $arr = array('alg' => 'HS256', 'typ' => 'JWT');
@@ -59,16 +60,18 @@ class Route{
     public static function post($uri,$callback){
         $uri = trim($uri, '/');
         self::$routes["POST"][$uri] = $callback;
-
+        return new static();
     }
     public static function put($uri,$callback){
         $uri = trim($uri, '/');
         self::$routes["PUT"][$uri] = $callback;
+        return new static();
 
     }
     public static function delete($uri,$callback){
         $uri = trim($uri, '/');
         self::$routes["DELETE"][$uri] = $callback;
+        return new static();
 
     }
     public static function dispatch(){
